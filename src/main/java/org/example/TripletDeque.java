@@ -280,12 +280,12 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public boolean add(E e) {
-        return false;
+        return offerLast(e);
     }
 
     @Override
     public boolean offer(E e) {
-        return false;
+        return offerFirst(e);
     }
 
     @Override
@@ -295,22 +295,36 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public E poll() {
-        return null;
+        return pollFirst();
     }
 
     @Override
     public E element() {
-        return null;
+        return getFirst();
     }
 
     @Override
     public E peek() {
-        return null;
+        return peekFirst();
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        boolean added = false;
+        if (c.stream().allMatch(el->el==null)) {
+            return false;
+        }
+        if (isEmpty()) {
+            Container<E> newContainer = new Container<>();
+            listOfContainers.set(0, newContainer);
+            listOfContainers.get(0).container = (List<E>) c;
+            added = true;
+        } else {
+            int i = getLastNonNullContainerIndex();
+            listOfContainers.get(0).container = (List<E>) c;
+            added = true;
+        }
+        return added;
     }
 
     @Override
@@ -350,12 +364,12 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public void push(E e) {
-
+        addFirst(e);
     }
 
     @Override
     public E pop() {
-        return null;
+        return removeFirst();
     }
 
     @Override
@@ -485,7 +499,7 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public Iterator<E> descendingIterator() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
