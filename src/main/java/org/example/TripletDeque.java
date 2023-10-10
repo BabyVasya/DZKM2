@@ -29,7 +29,16 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public Object[] getContainerByIndex(int cIndex) {
-        return new Container[]{listOfContainers.get(cIndex)};
+        Container<E> container = listOfContainers.get(cIndex);
+        if (container != null) {
+            if (container.container.stream().allMatch(el -> el == null)) {
+                return null;
+            } else {
+                return new Container[]{container};
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -107,7 +116,7 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public E removeFirst() {
-        if(isEmpty()) throw new NoSuchElementException("Такого элемента нет");
+        if(isEmpty()) throw new NoSuchElementException("Очередь пуста");
         E removing;
         if(listOfContainers.get(0).container.get(CONTAINER_SIZE - listOfContainers.get(0).size) == null) {
             removing = listOfContainers.get(0).container.set(listOfContainers.get(0).size - 1 , null);
@@ -123,13 +132,16 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     private void shiftNonNullElementsToFront() {
         boolean firstNullFound = false;
+        if (isEmpty()) return;
         for (int i = 0; i < listOfContainers.size(); i++) {
-            if (listOfContainers.get(i) == null && !firstNullFound) {
+            if(listOfContainers.get(i) == null && firstNullFound ) return;
+            if ( ( listOfContainers.get(i) == null ||(listOfContainers.get(i).container.stream().allMatch(el -> el == null) )) && !firstNullFound) {
                 firstNullFound = true;
             } else if (listOfContainers.get(i) != null && firstNullFound) {
                 Container<E> temp = listOfContainers.get(i);
                 listOfContainers.set(i, null);
                 listOfContainers.set(i - 1, temp);
+                break;
             }
         }
     }
@@ -155,15 +167,30 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public E pollFirst() {
-        if(listOfContainers.get(0).container.get(CONTAINER_SIZE - listOfContainers.get(0).size) == null || listOfContainers.isEmpty()) return null;
-        E removing =  listOfContainers.get(0).container.set(CONTAINER_SIZE - listOfContainers.get(0).size, null);
+        if(isEmpty()) return null;
+        E removing;
+        if(listOfContainers.get(0).container.get(CONTAINER_SIZE - listOfContainers.get(0).size) == null) {
+            removing = listOfContainers.get(0).container.set(listOfContainers.get(0).size - 1 , null);
+        } else {
+            removing = listOfContainers.get(0).container.set(CONTAINER_SIZE - listOfContainers.get(0).size, null);
+        }
+
+        listOfContainers.get(0).size--;
         if(listOfContainers.get(0).container.stream().allMatch(el -> el ==null)) listOfContainers.set(0, null);
-        return removing;
+        shiftNonNullElementsToFront();
+        return  removing;
     }
 
     @Override
     public E pollLast() {
-        return null;
+        if(isEmpty()) return null;
+        int i = getLastNonNullContainerIndex();
+        int j = getFirstNotNullFromEndInTheContainer(i);
+        E removing = listOfContainers.get(i).container.set(j, null);
+        listOfContainers.get(i).size--;
+        if(listOfContainers.get(i).container.stream().allMatch(el -> el ==null)) listOfContainers.set(i, null);
+        shiftNonNullElementsToFront();
+        return removing;
     }
 
     @Override
@@ -186,22 +213,69 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public E peekFirst() {
-        return null;
+        if (isEmpty() ) return null;
+        return listOfContainers.get(0).container.get(CONTAINER_SIZE - listOfContainers.get(0).size);
     }
 
     @Override
     public E peekLast() {
-        return null;
+        if (isEmpty() ) return null;
+        E result;
+        int i = getLastNonNullContainerIndex();
+        E tmp1 = listOfContainers.get(i).container.get(CONTAINER_SIZE-1);
+        E tmp2 = listOfContainers.get(i).container.get(0);
+        if(tmp1 == null) {
+            return tmp2;
+        } else return tmp1;
     }
 
     @Override
     public boolean removeFirstOccurrence(Object o) {
-        return false;
+        if(isEmpty()) {
+            return false;
+        }
+        boolean result = false;
+        for(int i =0; i < listOfContainers.size()-1; i++) {
+            for(int j = 0; j< CONTAINER_SIZE; j++ ) {
+                if ((listOfContainers.get(i).container.get(CONTAINER_SIZE - 1 - j) != null) && (listOfContainers.get(i).container.get(CONTAINER_SIZE - 1 - j).equals(o))  ) {
+                    listOfContainers.get(i).container.set(CONTAINER_SIZE - 1 -j, null);
+                    if( (listOfContainers.get(i).container.stream().allMatch(el -> el ==null) )  ) {
+                        shiftNonNullElementsToFront();
+                    }
+                    result = true;
+                    break;
+                }
+                if(result == true) break;
+            }
+            if(result == true) break;
+        }
+        return result;
     }
 
     @Override
     public boolean removeLastOccurrence(Object o) {
-        return false;
+        if(isEmpty()) {
+            return false;
+        }
+        boolean result = false;
+        for(int i =listOfContainers.size()-1; i >=0 ; i++) {
+            for(int j = CONTAINER_SIZE-1; j>=0 ; j++ ) {
+                if ((listOfContainers.get(i).container.get(CONTAINER_SIZE - 1 - j) != null) && (listOfContainers.get(i).container.get(CONTAINER_SIZE - 1 - j).equals(o))  ) {
+                    listOfContainers.get(i).container.set(CONTAINER_SIZE - 1 -j, null);
+                    if( (listOfContainers.get(i).container.stream().allMatch(el -> el ==null) )  ) {
+                        shiftNonNullElementsToFront();
+                        if(listOfContainers.get(3) != null){
+                            System.out.println("не вышло");
+                        }
+                    }
+                    result = true;
+                    break;
+                }
+                if(result == true) break;
+            }
+            if(result == true) break;
+        }
+        return result;
     }
 
     @Override
@@ -256,7 +330,7 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
 
     @Override
     public void clear() {
-
+        listOfContainers.stream().forEach(el -> listOfContainers.set(listOfContainers.indexOf(el), null));
     }
 
     @Override
@@ -287,26 +361,27 @@ public class TripletDeque<E> implements Deque<E>, Containerable {
     @Override
     public boolean remove(Object o) {
         if(isEmpty()) {
-            throw new NoSuchElementException("Очередь пуста, удалять нечего");
+            return false;
         }
-        boolean flag = false;
         boolean result = false;
             for(int i =0; i < listOfContainers.size()-1; i++) {
                 for(int j = 0; j< CONTAINER_SIZE; j++ ) {
-                    if ( (listOfContainers.get(i).container.get(CONTAINER_SIZE - 1 - j).equals(o))  ) {
-                        listOfContainers.get(i).container.set(CONTAINER_SIZE - 1 - j, null);
-                        listOfContainers.get(i).size--;
-                        if(listOfContainers.get(i).container.stream().allMatch(el -> el ==null)) {
-                            listOfContainers.set(i, null);
-                        }
-                        Collections.sort(listOfContainers.get(i).container, Comparator.comparing(element -> element == null ? 0 : 1));
-                        result = true;
-                        break;
+                    if ((listOfContainers.get(i).container.get(CONTAINER_SIZE - 1 - j) != null) && (listOfContainers.get(i).container.get(CONTAINER_SIZE - 1 - j).equals(o))  ) {
+                            listOfContainers.get(i).container.set(CONTAINER_SIZE - 1 -j, null);
+                            if( (listOfContainers.get(i).container.stream().allMatch(el -> el ==null) )  ) {
+                                shiftNonNullElementsToFront();
+                                if(listOfContainers.get(3) != null){
+                                    System.out.println("не вышло");
+                                }
+                            }
+                            result = true;
+                            break;
                     }
+                    if(result == true) break;
                 }
                 if(result == true) break;
             }
-        return flag;
+        return result;
     }
 
     @Override

@@ -11,12 +11,14 @@ public class Main {
         for (int i=0; i < 15 ;i++){
             t.addFirst(i);
         }
+        t.addFirst(13);
         for (int i=0; i < 15 ;i++){
             t.addLast(i);
         }
+        System.out.println(t.removeFirstOccurrence(14));
+        System.out.println(t.getFirst());
 
-        t.removeFirst();
-        System.out.println(t.size());
+
 
 
 
