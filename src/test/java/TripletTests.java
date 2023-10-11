@@ -1,8 +1,8 @@
+import org.example.Containerable;
 import org.example.TripletDeque;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.example.Containerable;
 
 import java.util.*;
 
@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TripletTests {
 
-    private TripletDeque<String> tQueue = new TripletDeque<>();
-    private Containerable cQueue = tQueue;
+    private Deque<String> tQueue = new TripletDeque<>();
+    private Containerable cQueue = (Containerable) tQueue;
 
     @Test
     void addTest(){
@@ -58,6 +58,7 @@ public class TripletTests {
         Assertions.assertTrue(tQueue.contains("n_3"));
         tQueue.remove("n_3");
         Assertions.assertFalse(tQueue.contains("n_3"));
+
     }
 
 
@@ -248,7 +249,7 @@ public class TripletTests {
         for (int i =0; i < 5; i++){
             tQueue.addFirst(i+"");
         }
-        Object[] cntr = tQueue.getContainerByIndex(0);
+        Object[] cntr = cQueue.getContainerByIndex(0);
         Assertions.assertTrue(cntr[0] != null && cntr[cntr.length-1] != null);
         tQueue.remove("2");
         Assertions.assertTrue(cntr[0] == null || cntr[cntr.length-1] == null);
@@ -280,6 +281,7 @@ public class TripletTests {
         cntr2 = cQueue.getContainerByIndex(2);
 
         Assertions.assertTrue(cntr!=null && cntr1 != null && cntr2 ==null);
+
     }
 
     @BeforeEach
