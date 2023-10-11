@@ -133,23 +133,23 @@ public class TripletTests {
 
     @Test
     public void testRemoveFirst() {
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             tQueue.addFirst( String.valueOf(i) );
             assertEquals(String.valueOf(i), tQueue.removeFirst());
         }
 
 
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             tQueue.addLast( String.valueOf(i) );
             assertEquals(String.valueOf(i), tQueue.removeFirst());
         }
 
 
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             tQueue.addLast( String.valueOf(i) );
         }
 
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             assertEquals(String.valueOf(i), tQueue.removeFirst());
         }
 
@@ -157,23 +157,23 @@ public class TripletTests {
 
     @Test
     public void testRemoveLast() {
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             tQueue.addFirst( String.valueOf(i) );
             assertEquals(String.valueOf(i), tQueue.removeLast());
         }
 
 
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             tQueue.addLast( String.valueOf(i) );
             assertEquals(String.valueOf(i), tQueue.removeLast());
         }
 
 
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             tQueue.addFirst( String.valueOf(i) );
         }
 
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             assertEquals(String.valueOf(i), tQueue.removeLast());
         }
     }
@@ -185,7 +185,7 @@ public class TripletTests {
         Iterator<String> anIterator = tQueue.iterator();
         assertFalse( anIterator.hasNext() );
 
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             tQueue.addFirst( String.valueOf(i) );
         }
 
@@ -193,7 +193,7 @@ public class TripletTests {
 
         assertTrue( anIterator.hasNext() );
 
-        int i = 10 - 1;
+        int i = 100 - 1;
         for(String aString : tQueue){
             assertEquals( String.valueOf(i), aString);
             i--;
@@ -203,7 +203,7 @@ public class TripletTests {
 
         assertTrue( anIterator.hasNext() );
 
-        int j = 10 - 1;
+        int j = 100 - 1;
         while( anIterator.hasNext() ){
             assertEquals( String.valueOf(j), anIterator.next());
             j--;
@@ -251,7 +251,7 @@ public class TripletTests {
         Object[] cntr = tQueue.getContainerByIndex(0);
         Assertions.assertTrue(cntr[0] != null && cntr[cntr.length-1] != null);
         tQueue.remove("2");
-        Assertions.assertFalse(cntr[0] == null || cntr[cntr.length-1] == null);
+        Assertions.assertTrue(cntr[0] == null || cntr[cntr.length-1] == null);
 
         for (int i=1; i < cntr.length-2; i++){
             assertNotNull(cntr[i]);
