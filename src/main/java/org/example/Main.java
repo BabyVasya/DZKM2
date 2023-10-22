@@ -1,21 +1,23 @@
 package org.example;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-        TripletDeque<Integer> t = new TripletDeque<>();
-        for (int i =0; i < 15; i++){
-            t.addLast(i);
-        }
-        for (int i =0; i < 15; i++){
+        TripletDeque<Integer> t = new TripletDeque<>(2000);
+
+        for (int i =0; i < 999; i++){
             t.addFirst(i);
         }
-        t.removeLastOccurrence(3);
-        t.remove(2);
+        System.out.println(t.size());
+        for (int i =0; i < 999; i++){
+            t.addFirst(i);
+        }
+        System.out.println(t.size());
+        for (int i =0; i < 3; i++){
+            t.addFirst(i);
+        }
+        System.out.println(t.size());
     }
 }
